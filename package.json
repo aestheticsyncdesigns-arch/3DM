@@ -1,0 +1,23 @@
+{
+  "name": "3dm",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:guest": "npm run dev --workspace=apps/guest",
+    "dev:admin": "npm run dev --workspace=apps/admin",
+    "dev:staff": "npm run dev --workspace=apps/staff",
+    "build:guest": "npm run build --workspace=apps/guest",
+    "build:admin": "npm run build --workspace=apps/admin",
+    "build:staff": "npm run build --workspace=apps/staff",
+    "test:connection": "tsx scripts/test-connection.ts"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4"
+  }
+}
