@@ -80,7 +80,6 @@ export default function WaiterCallButton({ restaurantId, tableId }: Props) {
 
     // Fire-and-forget — analytics failure should never block the UI
     const payload = { event_type: 'waiter_call', restaurant_id: restaurantId, table_id: tableId ?? null }
-    // @ts-expect-error — analytics_events types not generated; payload is valid at runtime
     void supabase.from('analytics_events').insert(payload)
 
     clearTimeout(callingTimerRef.current)

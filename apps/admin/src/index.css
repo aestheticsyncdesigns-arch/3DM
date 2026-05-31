@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #FF5722;
+}
+
+html {
+  scroll-behavior: smooth;
+}

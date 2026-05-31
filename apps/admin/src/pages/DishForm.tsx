@@ -103,21 +103,26 @@ function Toggle({ checked, onChange, label, sublabel }: {
         <p className="text-sm font-medium text-gray-700">{label}</p>
         {sublabel && <p className="text-xs text-gray-400">{sublabel}</p>}
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked ? 'true' : 'false'}
-        onClick={() => onChange(!checked)}
-        className={[
-          'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors',
-          checked ? 'bg-[#FF5722]' : 'bg-gray-200',
-        ].join(' ')}
-      >
-        <span className={[
-          'inline-block h-4 w-4 rounded-full bg-white shadow transition-transform',
-          checked ? 'translate-x-6' : 'translate-x-1',
-        ].join(' ')} />
-      </button>
+      <div className="relative flex items-center">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={e => onChange(e.target.checked)}
+          className="peer sr-only"
+        />
+        <div
+          className={[
+            'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors outline-none',
+            'peer-focus-visible:ring-2 peer-focus-visible:ring-[#FF5722] peer-focus-visible:ring-offset-2',
+            checked ? 'bg-[#FF5722]' : 'bg-gray-200',
+          ].join(' ')}
+        >
+          <span className={[
+            'inline-block h-4 w-4 rounded-full bg-white shadow transition-transform',
+            checked ? 'translate-x-6' : 'translate-x-1',
+          ].join(' ')} />
+        </div>
+      </div>
     </label>
   )
 }
