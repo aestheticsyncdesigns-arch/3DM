@@ -41,6 +41,8 @@ export interface Dish {
   is_veg: boolean | null
   has_egg: boolean | null
   spice_level: number | null
+  intensity_level: number | null
+  dish_type: string | null
   is_available: boolean | null
   photo_url: string | null
   model_3d_url: string | null

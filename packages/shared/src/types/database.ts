@@ -8,6 +8,7 @@ export interface Database {
           id: string
           name: string
           subdomain: string
+          owner_id: string | null
           gstin: string | null
           logo_url: string | null
           address: string | null
@@ -20,6 +21,7 @@ export interface Database {
           id?: string
           name: string
           subdomain: string
+          owner_id?: string | null
           gstin?: string | null
           logo_url?: string | null
           address?: string | null
@@ -32,6 +34,7 @@ export interface Database {
           id?: string
           name?: string
           subdomain?: string
+          owner_id?: string | null
           gstin?: string | null
           logo_url?: string | null
           address?: string | null
@@ -39,6 +42,7 @@ export interface Database {
           plan?: string | null
           ar_credits?: number | null
         }
+        Relationships: []
       }
       menus: {
         Row: {
@@ -70,6 +74,7 @@ export interface Database {
           schedule_end?: string | null
           is_active?: boolean | null
         }
+        Relationships: []
       }
       categories: {
         Row: {
@@ -93,6 +98,7 @@ export interface Database {
           icon?: string | null
           display_order?: number | null
         }
+        Relationships: []
       }
       dishes: {
         Row: {
@@ -106,6 +112,8 @@ export interface Database {
           is_veg: boolean | null
           has_egg: boolean | null
           spice_level: number | null
+          intensity_level: number | null
+          dish_type: string | null
           is_available: boolean | null
           photo_url: string | null
           model_3d_url: string | null
@@ -124,6 +132,8 @@ export interface Database {
           is_veg?: boolean | null
           has_egg?: boolean | null
           spice_level?: number | null
+          intensity_level?: number | null
+          dish_type?: string | null
           is_available?: boolean | null
           photo_url?: string | null
           model_3d_url?: string | null
@@ -142,12 +152,15 @@ export interface Database {
           is_veg?: boolean | null
           has_egg?: boolean | null
           spice_level?: number | null
+          intensity_level?: number | null
+          dish_type?: string | null
           is_available?: boolean | null
           photo_url?: string | null
           model_3d_url?: string | null
           is_featured?: boolean | null
           display_order?: number | null
         }
+        Relationships: []
       }
       tables: {
         Row: {
@@ -171,6 +184,7 @@ export interface Database {
           qr_code_url?: string | null
           is_active?: boolean | null
         }
+        Relationships: []
       }
       orders: {
         Row: {
@@ -220,6 +234,7 @@ export interface Database {
           guest_phone?: string | null
           token_number?: number | null
         }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -246,6 +261,7 @@ export interface Database {
           price?: number
           customisations?: string | null
         }
+        Relationships: []
       }
       staff: {
         Row: {
@@ -277,6 +293,7 @@ export interface Database {
           pin?: string
           is_active?: boolean | null
         }
+        Relationships: []
       }
       loyalty_points: {
         Row: {
@@ -302,6 +319,7 @@ export interface Database {
           points?: number | null
           tier?: string | null
         }
+        Relationships: []
       }
       analytics_events: {
         Row: {
@@ -327,6 +345,7 @@ export interface Database {
           dish_id?: string | null
           table_id?: string | null
         }
+        Relationships: []
       }
     }
     Views: Record<string, never>

@@ -1,3 +1,5 @@
+import { DISH_TYPE_CONFIG } from '@3dm/shared'
+import type { DishType } from '@3dm/shared'
 import { useCart } from '../context/CartContext'
 import type { Dish } from '../types'
 
@@ -20,21 +22,57 @@ function FssaiDot({ type }: { type: 'veg' | 'nonveg' | 'egg' }) {
   )
 }
 
-function SpiceIndicator({ level }: { level: number }) {
+function ChilliIcon({ color }: { color: string }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C10 2 8.5 3 7.5 4.5C6 4 4 4.5 3 6c1.5-.5 3 0 3.5 1C5 9 4.5 11 5 13c.5 2 2 4 4 5.5C11 20.5 13 21 14 21c3 0 6-2 7-5.5.5-2 0-4-1-5.5C18.5 8 17 6.5 15 6c-.5-1.5-1.5-4-3-4z" />
+    </svg>
+  )
+}
+
+function IntensityIndicator({ dish }: { dish: Dish }) {
+  const dishType = (dish.dish_type ?? 'food') as DishType
+  const config   = DISH_TYPE_CONFIG[dishType] ?? DISH_TYPE_CONFIG.food
+  const level    = dish.intensity_level ?? dish.spice_level ?? 0
+
+  if (!config.showIntensity) return null
+
+  // ── Beverage: single icon + label ────────────────────────────────────────
+  if (dishType === 'beverage') {
+    const lvl = config.levels.find(l => l.value === level)
+    if (!lvl) return null
+    return (
+      <span className="flex items-center gap-1 text-xs text-gray-500">
+        <span>{lvl.icon}</span>
+        <span>{lvl.label}</span>
+      </span>
+    )
+  }
+
+  // ── Dessert: N candy emoji icons ─────────────────────────────────────────
+  if (dishType === 'dessert') {
+    if (level === 0) return null
+    return (
+      <span className="flex items-center gap-0.5 text-xs">
+        {Array.from({ length: level }).map((_, i) => (
+          <span key={i}>🍬</span>
+        ))}
+      </span>
+    )
+  }
+
+  // ── Food (default): chilli icons ─────────────────────────────────────────
   if (level === 0) {
     return <span className="text-xs text-gray-400">Mild</span>
   }
 
-  const chillies = Array.from({ length: level })
-  const isExtraHot = level >= 3
-  const color = isExtraHot ? '#e53935' : '#fb8c00'
+  const isExtraHot  = level >= 3
+  const chilliColor = isExtraHot ? '#e53935' : '#fb8c00'
 
   return (
     <span className="flex items-center gap-0.5">
-      {chillies.map((_, i) => (
-        <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C10 2 8.5 3 7.5 4.5C6 4 4 4.5 3 6c1.5-.5 3 0 3.5 1C5 9 4.5 11 5 13c.5 2 2 4 4 5.5C11 20.5 13 21 14 21c3 0 6-2 7-5.5.5-2 0-4-1-5.5C18.5 8 17 6.5 15 6c-.5-1.5-1.5-4-3-4z" />
-        </svg>
+      {Array.from({ length: level }).map((_, i) => (
+        <ChilliIcon key={i} color={chilliColor} />
       ))}
       {isExtraHot && (
         <span className="ml-0.5 text-xs font-medium text-red-600">Extra Hot</span>
@@ -46,14 +84,13 @@ function SpiceIndicator({ level }: { level: number }) {
 export default function DishCard({ dish }: Props) {
   const { addToCart, updateQuantity, items } = useCart()
 
-  const spice = dish.spice_level ?? 0
-  const isVeg = dish.is_veg ?? true
-  const hasEgg = dish.has_egg ?? false
+  const isVeg      = dish.is_veg ?? true
+  const hasEgg     = dish.has_egg ?? false
   const isAvailable = dish.is_available !== false
   const dotType: 'veg' | 'nonveg' | 'egg' = hasEgg ? 'egg' : isVeg ? 'veg' : 'nonveg'
 
   const cartItem = items.find((i) => i.dish.id === dish.id)
-  const cartQty = cartItem?.quantity ?? 0
+  const cartQty  = cartItem?.quantity ?? 0
 
   return (
     <div
@@ -84,7 +121,7 @@ export default function DishCard({ dish }: Props) {
         <p className="text-base font-bold leading-tight text-gray-900">{dish.name}</p>
 
         <div className="mt-0.5">
-          <SpiceIndicator level={spice} />
+          <IntensityIndicator dish={dish} />
         </div>
 
         {dish.description && (
@@ -97,6 +134,7 @@ export default function DishCard({ dish }: Props) {
 
         {dish.model_3d_url && (
           <button
+            type="button"
             disabled={!isAvailable}
             className="mt-1.5 flex w-fit items-center gap-1 rounded-full border border-[#FF5722] px-2.5 py-0.5 text-[11px] font-semibold text-[#FF5722] transition-colors hover:bg-orange-50"
           >
