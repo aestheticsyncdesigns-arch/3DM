@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #FF5722;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Shake animation for an incorrect PIN entry */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Shrinks from full width to zero via scaleX (Composite-friendly).
+   The element needs transform-origin: left so the bar drains left-to-right. */
+@keyframes countdown-shrink {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+.animate-countdown {
+  animation: countdown-shrink 10s linear forwards;
+  transform-origin: left;
+}
+
+.animate-countdown-fast {
+  animation: countdown-shrink 8s linear forwards;
+  transform-origin: left;
+}

@@ -78,9 +78,11 @@ export default function WaiterCallButton({ restaurantId, tableId }: Props) {
     lastCalledAtRef.current = now
     setCallStatus('calling')
 
-    // Fire-and-forget — analytics failure should never block the UI
     const payload = { event_type: 'waiter_call', restaurant_id: restaurantId, table_id: tableId ?? null }
-    void supabase.from('analytics_events').insert(payload)
+    supabase.from('analytics_events').insert(payload).then(({ data, error }) => {
+      console.log('[WaiterCall] insert payload:', payload)
+      console.log('[WaiterCall] insert response:', { data, error })
+    })
 
     clearTimeout(callingTimerRef.current)
     callingTimerRef.current = setTimeout(() => {

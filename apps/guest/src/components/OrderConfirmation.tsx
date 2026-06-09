@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { downloadBill } from '../lib/bill'
 import type { PlacedOrder } from '../hooks/usePlaceOrder'
 import type { CartItem } from '../context/CartContext'
 import type { OrderStatus } from '../hooks/useOrderStatus'
@@ -23,6 +25,21 @@ export default function OrderConfirmation({ order, items, status, onClose, onDis
   const currentIdx = STATUS_ORDER.indexOf(status)
   const isReady = status === 'ready'
   const isDelivered = status === 'delivered'
+
+  const [billBusy, setBillBusy]   = useState(false)
+  const [billError, setBillError] = useState<string | null>(null)
+
+  async function handleDownloadBill() {
+    setBillBusy(true)
+    setBillError(null)
+    try {
+      await downloadBill(order.id)
+    } catch (e) {
+      setBillError(e instanceof Error ? e.message : 'Could not generate the bill')
+    } finally {
+      setBillBusy(false)
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-[70] flex flex-col overflow-y-auto bg-gray-900 px-6 py-10">
@@ -132,10 +149,23 @@ export default function OrderConfirmation({ order, items, status, onClose, onDis
             </div>
           ))}
           <div className="mt-2 flex justify-between border-t border-white/10 pt-2">
-            <span className="text-sm font-bold text-gray-300">Total Paid</span>
+            <span className="text-sm font-bold text-gray-300">Total</span>
             <span className="font-bold text-white">₹ {order.total}</span>
           </div>
         </div>
+
+        {/* Download GST bill */}
+        <button
+          type="button"
+          onClick={handleDownloadBill}
+          disabled={billBusy}
+          className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 py-4 text-base font-bold text-white active:bg-white/20 disabled:opacity-60"
+        >
+          {billBusy ? 'Generating bill…' : '📄 Download Bill'}
+        </button>
+        {billError && (
+          <p className="mb-3 -mt-1 w-full text-center text-xs text-red-400">{billError}</p>
+        )}
 
         {/* Action button */}
         {isDelivered ? (

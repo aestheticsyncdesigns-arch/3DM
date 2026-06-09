@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import MenuPage from './pages/MenuPage'
 import CartBar from './components/CartBar'
+import ActiveOrderPill from './components/ActiveOrderPill'
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         <Route path="/:subdomain/menu" element={<MenuPage />} />
       </Routes>
       <CartBar />
+      <ActiveOrderPill />
     </>
   )
 }

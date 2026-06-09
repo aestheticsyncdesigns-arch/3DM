@@ -65,6 +65,24 @@ function BarChartIcon() {
   )
 }
 
+function ReceiptIcon() {
+  return (
+    <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+      <path d="M8 7h8" /><path d="M8 11h8" /><path d="M8 15h5" />
+    </svg>
+  )
+}
+
+function SettingsIcon() {
+  return (
+    <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+    </svg>
+  )
+}
+
 function LogOutIcon() {
   return (
     <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -109,8 +127,10 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard/menu',       label: 'Menu Builder', Icon: UtensilsIcon },
   { to: '/dashboard/orders',     label: 'Live Orders',  Icon: BellIcon,    ordersKey: true },
   { to: '/dashboard/tables',     label: 'Tables & QR',  Icon: QrCodeIcon },
-  { to: '/dashboard/staff',      label: 'Staff',        Icon: UsersIcon },
-  { to: '/dashboard/analytics',  label: 'Analytics',    Icon: BarChartIcon },
+  { to: '/dashboard/staff',      label: 'Staff',         Icon: UsersIcon },
+  { to: '/dashboard/history',    label: 'Order History', Icon: ReceiptIcon },
+  { to: '/dashboard/analytics',  label: 'Analytics',     Icon: BarChartIcon },
+  { to: '/dashboard/settings',   label: 'Settings',      Icon: SettingsIcon },
 ]
 
 // ─── Sidebar content (shared between desktop and mobile drawer) ───────────────

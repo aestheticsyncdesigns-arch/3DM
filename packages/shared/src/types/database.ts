@@ -10,6 +10,8 @@ export interface Database {
           subdomain: string
           owner_id: string | null
           gstin: string | null
+          gst_slab: number | null
+          hsn_code: string | null
           logo_url: string | null
           address: string | null
           phone: string | null
@@ -23,6 +25,8 @@ export interface Database {
           subdomain: string
           owner_id?: string | null
           gstin?: string | null
+          gst_slab?: number | null
+          hsn_code?: string | null
           logo_url?: string | null
           address?: string | null
           phone?: string | null
@@ -36,6 +40,8 @@ export interface Database {
           subdomain?: string
           owner_id?: string | null
           gstin?: string | null
+          gst_slab?: number | null
+          hsn_code?: string | null
           logo_url?: string | null
           address?: string | null
           phone?: string | null
@@ -120,6 +126,7 @@ export interface Database {
           is_featured: boolean | null
           display_order: number | null
           created_at: string | null
+          stock_note: string | null
         }
         Insert: {
           id?: string
@@ -140,6 +147,7 @@ export interface Database {
           is_featured?: boolean | null
           display_order?: number | null
           created_at?: string | null
+          stock_note?: string | null
         }
         Update: {
           id?: string
@@ -159,6 +167,7 @@ export interface Database {
           model_3d_url?: string | null
           is_featured?: boolean | null
           display_order?: number | null
+          stock_note?: string | null
         }
         Relationships: []
       }
@@ -199,9 +208,16 @@ export interface Database {
           payment_method: string | null
           payment_status: string | null
           razorpay_order_id: string | null
+          razorpay_payment_id: string | null
           guest_phone: string | null
           token_number: number | null
           created_at: string | null
+          preparing_at: string | null
+          ready_at: string | null
+          delivered_at: string | null
+          taken_by: string | null
+          paid_by: string | null
+          paid_at: string | null
         }
         Insert: {
           id?: string
@@ -215,9 +231,16 @@ export interface Database {
           payment_method?: string | null
           payment_status?: string | null
           razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           guest_phone?: string | null
           token_number?: number | null
           created_at?: string | null
+          preparing_at?: string | null
+          ready_at?: string | null
+          delivered_at?: string | null
+          taken_by?: string | null
+          paid_by?: string | null
+          paid_at?: string | null
         }
         Update: {
           id?: string
@@ -231,8 +254,15 @@ export interface Database {
           payment_method?: string | null
           payment_status?: string | null
           razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           guest_phone?: string | null
           token_number?: number | null
+          preparing_at?: string | null
+          ready_at?: string | null
+          delivered_at?: string | null
+          taken_by?: string | null
+          paid_by?: string | null
+          paid_at?: string | null
         }
         Relationships: []
       }
@@ -244,6 +274,7 @@ export interface Database {
           quantity: number
           price: number
           customisations: string | null
+          notes: string | null
         }
         Insert: {
           id?: string
@@ -252,6 +283,7 @@ export interface Database {
           quantity: number
           price: number
           customisations?: string | null
+          notes?: string | null
         }
         Update: {
           id?: string
@@ -260,6 +292,7 @@ export interface Database {
           quantity?: number
           price?: number
           customisations?: string | null
+          notes?: string | null
         }
         Relationships: []
       }
@@ -273,6 +306,7 @@ export interface Database {
           pin: string
           is_active: boolean | null
           created_at: string | null
+          last_active_at: string | null
         }
         Insert: {
           id?: string
@@ -283,6 +317,7 @@ export interface Database {
           pin: string
           is_active?: boolean | null
           created_at?: string | null
+          last_active_at?: string | null
         }
         Update: {
           id?: string
@@ -292,6 +327,7 @@ export interface Database {
           phone?: string | null
           pin?: string
           is_active?: boolean | null
+          last_active_at?: string | null
         }
         Relationships: []
       }
@@ -329,6 +365,7 @@ export interface Database {
           dish_id: string | null
           table_id: string | null
           created_at: string | null
+          metadata: Record<string, unknown> | null
         }
         Insert: {
           id?: string
@@ -337,6 +374,7 @@ export interface Database {
           dish_id?: string | null
           table_id?: string | null
           created_at?: string | null
+          metadata?: Record<string, unknown> | null
         }
         Update: {
           id?: string
@@ -344,6 +382,7 @@ export interface Database {
           event_type?: string
           dish_id?: string | null
           table_id?: string | null
+          metadata?: Record<string, unknown> | null
         }
         Relationships: []
       }

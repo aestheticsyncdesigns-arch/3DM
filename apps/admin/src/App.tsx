@@ -5,10 +5,12 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import OverviewPage from './pages/OverviewPage'
 import MenuBuilderPage from './pages/MenuBuilderPage'
-import OrdersPage from './pages/OrdersPage'
+import LiveOrdersPage from './pages/LiveOrdersPage'
 import TablesPage from './pages/TablesPage'
 import StaffPage from './pages/StaffPage'
 import AnalyticsPage from './pages/AnalyticsPage'
+import OrderHistoryPage from './pages/OrderHistoryPage'
+import SettingsPage from './pages/SettingsPage'
 
 export default function App() {
   return (
@@ -22,10 +24,12 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<OverviewPage />} />
             <Route path="menu" element={<MenuBuilderPage />} />
-            <Route path="orders" element={<OrdersPage />} />
+            <Route path="orders" element={<LiveOrdersPage />} />
             <Route path="tables" element={<TablesPage />} />
             <Route path="staff" element={<StaffPage />} />
+            <Route path="history" element={<OrderHistoryPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Route>
       </Routes>

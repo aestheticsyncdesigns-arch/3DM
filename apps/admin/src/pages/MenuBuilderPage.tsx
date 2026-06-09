@@ -3,6 +3,7 @@ import type { Database } from '@3dm/shared'
 import { supabase } from '../supabase'
 import { useRestaurant } from '../hooks/useRestaurant'
 import DishForm from './DishForm'
+import ImportMenuModal from '../components/ImportMenuModal'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,6 +60,14 @@ function PlusIcon() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
       <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  )
+}
+
+function SparklesIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
     </svg>
   )
 }
@@ -532,13 +541,14 @@ function DishRow({ dish, onToggle, onEdit, onDelete }: DishRowProps) {
 // ─── Dishes Tab ───────────────────────────────────────────────────────────────
 
 interface DishesTabProps {
-  menuId:      string | null
-  refreshKey:  number
-  onAddDish:   (preselectedCategoryId?: string) => void
-  onEditDish:  (dish: Dish) => void
+  menuId:        string | null
+  refreshKey:    number
+  onAddDish:     (preselectedCategoryId?: string) => void
+  onEditDish:    (dish: Dish) => void
+  onImportClick: () => void
 }
 
-function DishesTab({ menuId, refreshKey, onAddDish, onEditDish }: DishesTabProps) {
+function DishesTab({ menuId, refreshKey, onAddDish, onEditDish, onImportClick }: DishesTabProps) {
   const [categories,   setCategories]   = useState<Category[]>([])
   const [dishes,       setDishes]       = useState<Dish[]>([])
   const [isLoading,    setIsLoading]    = useState(true)
@@ -623,13 +633,22 @@ function DishesTab({ menuId, refreshKey, onAddDish, onEditDish }: DishesTabProps
           </h2>
           <p className="text-xs text-gray-400">Toggle availability instantly · Edit or delete any dish</p>
         </div>
-        <button
-          type="button"
-          onClick={() => onAddDish()}
-          className="flex items-center gap-2 rounded-xl bg-[#FF5722] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90"
-        >
-          <PlusIcon /> Add Dish
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onImportClick}
+            className="flex items-center gap-2 rounded-xl border border-[#FF5722] bg-white px-4 py-2.5 text-sm font-semibold text-[#FF5722] shadow-sm hover:bg-orange-50"
+          >
+            <SparklesIcon /> Import from PDF
+          </button>
+          <button
+            type="button"
+            onClick={() => onAddDish()}
+            className="flex items-center gap-2 rounded-xl bg-[#FF5722] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90"
+          >
+            <PlusIcon /> Add Dish
+          </button>
+        </div>
       </div>
 
       {error && <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>}
@@ -716,20 +735,39 @@ export default function MenuBuilderPage() {
   const [menuLoading,     setMenuLoading]     = useState(true)
   const [dishForm,        setDishForm]        = useState<DishFormState | null>(null)
   const [dishesRefreshKey, setDishesRefreshKey] = useState(0)
+  const [showImport,      setShowImport]      = useState(false)
 
   useEffect(() => {
     if (!restaurant?.id) return
-    supabase
-      .from('menus')
-      .select('id')
-      .eq('restaurant_id', restaurant.id)
-      .eq('is_active', true)
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        setMenuId(data?.id ?? null)
+    async function loadOrCreateMenu() {
+      // Use maybeSingle so multiple rows don't throw; take the first active menu
+      const { data: existing } = await supabase
+        .from('menus')
+        .select('id')
+        .eq('restaurant_id', restaurant!.id)
+        .eq('is_active', true)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+
+      if (existing) {
+        setMenuId(existing.id)
         setMenuLoading(false)
-      })
+        return
+      }
+
+      // No menu yet — create one (idempotent: only reaches here if the DB
+      // trigger wasn't present or didn't fire for this restaurant)
+      const { data: created } = await supabase
+        .from('menus')
+        .insert({ restaurant_id: restaurant!.id, name: 'Main Menu', is_active: true })
+        .select('id')
+        .single()
+
+      setMenuId(created?.id ?? null)
+      setMenuLoading(false)
+    }
+    void loadOrCreateMenu()
   }, [restaurant?.id])
 
   function handleDishSaved() {
@@ -798,6 +836,16 @@ export default function MenuBuilderPage() {
           refreshKey={dishesRefreshKey}
           onAddDish={categoryId => setDishForm({ mode: 'add', preselectedCategoryId: categoryId })}
           onEditDish={dish => setDishForm({ mode: 'edit', dish })}
+          onImportClick={() => setShowImport(true)}
+        />
+      )}
+
+      {showImport && menuId && restaurant?.id && (
+        <ImportMenuModal
+          menuId={menuId}
+          restaurantId={restaurant.id}
+          onClose={() => setShowImport(false)}
+          onImported={() => setDishesRefreshKey(k => k + 1)}
         />
       )}
     </div>

@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Database } from '@3dm/shared'
 import { supabase } from '../lib/supabase'
 import type { Category, Dish } from '../types'
@@ -12,26 +13,34 @@ export interface CategoryWithDishes extends Category {
 }
 
 export function useMenu(restaurantId: string | undefined) {
-  return useQuery<CategoryWithDishes[]>({
-    queryKey: ['menu', restaurantId],
+  const queryClient = useQueryClient()
+  const queryKey = ['menu', restaurantId]
+
+  const query = useQuery<CategoryWithDishes[]>({
+    queryKey,
     queryFn: async () => {
       if (!restaurantId) throw new Error('No restaurant ID')
 
+      // A restaurant may have more than one active menu row (e.g. duplicates
+      // created during signup/seeding). Fetch them all rather than .single(),
+      // which errors on multiple rows, and pull categories across all of them.
       const { data: menuData, error: menuError } = await supabase
         .from('menus')
         .select('*')
         .eq('restaurant_id', restaurantId)
         .eq('is_active', true)
-        .single()
+        .order('created_at', { ascending: true })
 
       if (menuError) return []
-      const menu = menuData as unknown as MenuRow
-      if (!menu) return []
+      const menus = (menuData ?? []) as unknown as MenuRow[]
+      if (menus.length === 0) return []
+
+      const menuIds = menus.map((m) => m.id)
 
       const { data: catData, error: catError } = await supabase
         .from('categories')
         .select('*')
-        .eq('menu_id', menu.id)
+        .in('menu_id', menuIds)
         .order('display_order')
 
       if (catError) throw catError
@@ -57,4 +66,23 @@ export function useMenu(restaurantId: string | undefined) {
     },
     enabled: !!restaurantId,
   })
+
+  // Live-refresh when a dish changes (e.g. marked out of stock) so it drops off
+  // the guest menu without a reload.
+  useEffect(() => {
+    if (!restaurantId) return
+    const channel = supabase
+      .channel(`menu-dishes-${restaurantId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'dishes' }, () => {
+        void queryClient.invalidateQueries({ queryKey })
+      })
+      .subscribe()
+
+    return () => {
+      void supabase.removeChannel(channel)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurantId])
+
+  return query
 }

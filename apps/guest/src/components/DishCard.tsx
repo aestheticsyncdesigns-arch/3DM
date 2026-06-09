@@ -1,10 +1,13 @@
 import { DISH_TYPE_CONFIG } from '@3dm/shared'
 import type { DishType } from '@3dm/shared'
 import { useCart } from '../context/CartContext'
+import { trackArView, trackDishView } from '../lib/analytics'
 import type { Dish } from '../types'
 
 interface Props {
   dish: Dish
+  restaurantId: string
+  tableId: string | null
 }
 
 function FssaiDot({ type }: { type: 'veg' | 'nonveg' | 'egg' }) {
@@ -81,7 +84,7 @@ function IntensityIndicator({ dish }: { dish: Dish }) {
   )
 }
 
-export default function DishCard({ dish }: Props) {
+export default function DishCard({ dish, restaurantId, tableId }: Props) {
   const { addToCart, updateQuantity, items } = useCart()
 
   const isVeg      = dish.is_veg ?? true
@@ -94,6 +97,7 @@ export default function DishCard({ dish }: Props) {
 
   return (
     <div
+      onClick={() => trackDishView(restaurantId, tableId, dish.id)}
       className={[
         'relative flex items-start gap-3 rounded-xl bg-white p-3 shadow-sm',
         !isAvailable && 'opacity-50',
@@ -136,6 +140,10 @@ export default function DishCard({ dish }: Props) {
           <button
             type="button"
             disabled={!isAvailable}
+            onClick={(e) => {
+              e.stopPropagation()
+              trackArView(restaurantId, tableId, dish.id)
+            }}
             className="mt-1.5 flex w-fit items-center gap-1 rounded-full border border-[#FF5722] px-2.5 py-0.5 text-[11px] font-semibold text-[#FF5722] transition-colors hover:bg-orange-50"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -188,7 +196,7 @@ export default function DishCard({ dish }: Props) {
         ) : (
           <button
             type="button"
-            onClick={() => isAvailable && addToCart(dish)}
+            onClick={(e) => { e.stopPropagation(); if (isAvailable) addToCart(dish) }}
             disabled={!isAvailable}
             aria-label={`Add ${dish.name} to cart`}
             className={[
